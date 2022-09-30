@@ -3,7 +3,8 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { TextureLoader } from 'three';
-
+import gsap from 'gsap';
+import {FirstPersonControls } from 'three/examples/jsm/controls/FirstPersonControls.js'
 // import atmospherevertexShader from './shaders/atmosphereFragment.glsl'
 // import atmospherefragmentShader from './shaders/atmosphereFragment.glsl'
 
@@ -37,31 +38,7 @@ function resize(force) {
 resize(true);
 document.body.appendChild( renderer.domElement );
   
-  //Earth Shits
-  
-  // const iss_loader = new THREE.BufferGeometryLoader();
-  // iss_loader.load(
-  // 	// resource URL
-  // 	'Spooce_App/Earth_3d/Models/iss_parts.json',
-  
-  // 	// onLoad callback
-  // 	function ( geometry ) {
-    // 		const material = new THREE.MeshLambertMaterial( { color: 0xF5F5F5 } );
-    // 		const object = new THREE.Mesh( geometry, material );
-    // 		scene.add( object );
-    // 	},
-    
-    // 	// onProgress callback
-    // 	function ( xhr ) {
-// 		console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
-// 	},
 
-// 	// onError callback
-// 	function ( err ) {
-  // 		console.log( 'An error happened' );
-  // 	}
-  // );
-  
   
 
 const SpaceMesh = new THREE.Mesh(
@@ -133,7 +110,7 @@ const material = new THREE.ShaderMaterial({
   fragmentShader: nightFragmentShader,
 });
 
-
+// Earth
 const EarthGeometry = new THREE.SphereGeometry(4,32,32);
 const EarthTexture = new THREE.TextureLoader().load('textures/Earth.jpg');
 const EarthBumpTexture = new TextureLoader().load('textures/Elevation.jpg')
@@ -176,28 +153,74 @@ scene.add(atmosphere)
 
 
 // LOADING ISS MODEL 
+var is_iss_selected = false;
 const loader = new GLTFLoader();
 loader.load(
 	'Models/ISS_2016.glb',
-	function ( gltf ) {
+	
+  function ( gltf ) {
 		scene.add( gltf.scene );
+    
 		const iss_animations = gltf.animations; 
-		const iss_scene = gltf.scene; 
-		const iss_scenes = gltf.scenes; 
+		const iss_scene = gltf.scene;  
 		const iss_cameras = gltf.cameras; 
-		const iss_assets = gltf.asset; 
+
 
     iss_scene.scale.set(0.001,0.001,0.001)
-    iss_scene.position.set(10,10,10)
+    iss_scene.position.set(10,2,3)
+
+    window.addEventListener('dblclick', function() {
+      console.log(iss_cameras)
+      var aabb = new THREE.Box3().setFromObject( gltf.scene );
+      var center = aabb.getCenter( new THREE.Vector3() );
+      var size = aabb.getSize( new THREE.Vector3() );
+      if (is_iss_selected === false) {
+        gsap.to( camera.position, {
+          duration: 1,
+          x: center.x,
+          y: center.y,
+          z: center.z + size.z + size.z, // maybe adding even more offset depending on your model
+          onUpdate: function() {
+            camera.lookAt( center );
+          }
+          } );
+          is_iss_selected = true;
+      }
+      else {
+        camera.lookAt(0, 0, 0)
+        is_iss_selected = false;
+      }
+      
+    })
+    
 
 	},
 	function ( xhr ) {
 		console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+    
 	},
 	function ( error ) {
 		console.log( 'An error happened' );
 	}
 );
+
+//HELPER FUNCTIONS
+
+//function to get XYZ coordinates (on Sphere) using latitude and longitude 
+
+function calcPosFromLatLonRad(lat,lon,radius){
+  x = -(radius * Math.sin((90-lat)*(Math.PI/180))*Math.cos((lon+180)*(Math.PI/180)));
+  z = (radius * Math.sin((90-lat)*(Math.PI/180))*Math.sin((lon+180)*(Math.PI/180)));
+  y = (radius * Math.cos((90-lat)*(Math.PI/180)));
+  return [x,y,z];
+}
+
+
+
+
+// Camera and selection functions
+
+
 
 
 
@@ -213,9 +236,15 @@ scene.add(AmbientLight);
 // scene.add(clouds)
 
 
+
+
 camera.position.z =8 
 function animate() {
-  time *= 0.01
+  
+
+  time = (new THREE.Clock()).getElapsedTime();
+  delta = (new THREE.Clock()).getDelta();
+  time *= Math.floor(Date.now() / 1000)
   resize();
   
   uniforms.sunDirection.value.y = Math.sin(time);
@@ -223,9 +252,22 @@ function animate() {
   // uniforms.sunDirection.value.copy(sunPosition);
   // uniforms.sunDirection.value.normalize();
   EarthMesh.rotation.x -= 0.000
-  EarthMesh.rotation.y += 0.0001
+  EarthMesh.rotation.y += delta * 45 * Math.PI / 180;
   
   renderer.render(scene, camera)
   requestAnimationFrame(animate)
 }
+
+function onMouseMove( event ) {
+	Mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+	Mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+}
+
+
+function onClick(event) {
+
+}
+
+
 animate();
