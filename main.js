@@ -254,7 +254,6 @@ function animate() {
 
     var satrec = twoline2satrec(tle[0], tle[1]);
     var position = propagate(satrec, new Date()).position;
-    console.log(position)
 
     iss_model.position.x =position.x / goddecide;
     iss_model.position.y =position.y / goddecide;
