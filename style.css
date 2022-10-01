@@ -1,6 +1,122 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@100;200;300;400;500;600;700&display=swap');
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'IBM Plex Mono', monospace;
+    color: white;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+}
 
 canvas {
-  position:fixed;
-  top:0;
-  left: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+canvas[data-engine='three.js'] {
+    z-index: -111 !important;
+}
+
+.m-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+}
+
+.m-container .myDetails {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+.m-container .myDetails .heading,
+.issDetails-container div .heading {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.m-container .myDetails,
+.issDetails-container div {
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: max-content;
+    height: max-content;
+    padding: 10px 20px;
+    font-size: 16px;
+    text-shadow: 1px 1px 5px #000000;
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: 9999;
+}
+
+.issDetails-container {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.issDetails-container div {
+    margin: 0 0 20px 0;
+    width: 275px;
+}
+
+
+/* -------------------------------------------------- */
+
+.menu-wrapper {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background-color: #000000;
+    width: max-content;
+    height: max-content;
+    padding: 10px 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.menu-wrapper .buttons-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.menu-wrapper .buttons-wrapper div {
+    margin: 0 15px 0 0;
+}
+
+.menu-wrapper .buttons-wrapper div:last-child {
+    margin: 0;
+}
+
+.menu-wrapper .buttons-wrapper div button {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0 10px;
+    width: max-content;
+    height: 60px;
+    outline: none;
+    border: 1px solid white;
+    background-color: black;
+}
+
+.menu-wrapper .buttons-wrapper div button:last-child {
+    margin-bottom: 0;
+}
+
+.menu-wrapper .buttons-wrapper div button i {
+    font-size: 18px;
 }

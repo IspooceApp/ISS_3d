@@ -1,15 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite App</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <canvas id="bg"></canvas>
-    
+
+    <link rel="stylesheet" href="./speedometer.css">
+    <link rel="stylesheet" href="./modal.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+
+    <script type="module" src="./app.js"></script>
+</head>
+
+<body>
+    <div class="m-container">
+        <div id="app"></div>
+        <canvas id="bg"></canvas>
+        <div class="wrapper">
+            <div class="myDetails">
+                <p class="heading">Your Details</p>
+                <span><a>Latitude</a>: <a id="myLatitude">27.3015140</a></span>
+                <span><a>Longitude</a>: <a id="myLongitude">85.2658180</a></span>
+                <span><a>Altitude</a>: <a id="myAltitude">1302m</a></span>
+                <span><a>Local Time</a>: <a id="myLocalTime">09:45 pm</a></span>
+                <span><a>Location</a>: <a id="myLocation">Kathmandu</a></span>
+            </div>
+
+            <div class="speedometer-container">
+                <div class="speedometer">
+                    <div class="speedbox">
+                        <div class="speedbox__score" id="speedbox-score-issVelcoity"></div>
+                        <div class="speedbox__groove"></div>
+                        <div class="speedbox__odo">
+                            <div class="speedbox__down">
+                                <small>Velocity</small>
+                                <div>
+                                    <p class="speedbox-data" id="speedbox-issVelocity">500</p>
+                                    <span>km/h</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="speedbox__base"></div>
+
+                    </div>
+                </div>
+                <div class="speedometer">
+                    <div class="speedbox">
+                        <div class="speedbox__score" id="speedbox-score-issAltitude"></div>
+                        <div class="speedbox__groove"></div>
+                        <div class="speedbox__odo">
+                            <div class="speedbox__down">
+                                <small>Altitude</small>
+                                <div>
+                                    <p class="speedbox-data" id="speedbox-issAltitude">1302</p>
+                                    <span>m</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="speedbox__base"></div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="issDetails-container">
+                <div class="issDetails">
+                    <p class="heading">ISS Details</p>
+                    <span><a>Object Name: </a> <a id="iss_name">ISS (Zarya)</a></span>
+                    <span><a>NORAD ID: </a> <a id="iss_noradID">25544</a></span>
+                    <span><a>Laitude: </a> <a id="iss_latitude">27.8281574</a></span>
+                    <span><a>Longitude: </a> <a id="iss_longitude">59.290804</a></span>
+                    <span><a>Altitude: </a> <a id="iss_altitude">59.290804</a></span>
+                    <span><a>Velocity: </a> <a id="iss_velocity">7.354km/s</a></span>
+                    <span><a>Visibility: </a> <a id="iss_status">Eclipsed</a></span>
+                    <span><a>TimeStamp: </a> <a id="iss_timeStamp">254.31</a></span>
+
+                </div>
+                <div class="issStatus">
+                    <span><a>Uplink: </a> <a id="iss_uplink">437.550MHz</a></span>
+                    <span><a>Downlink: </a> <a id="iss_downlink">437.550MHz</a></span>
+                    <span><a>Mode: </a> <a id="iss_mode">1200bps AFSK</a></span>
+                    <span><a>Call Sign: </a> <a id="iss_callSign">RS0ISS-4 11</a></span>
+                    <span><a>Status: </a> <a id="iss_status">Inactive</a></span>
+                </div>
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="popUpModal" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                            <button type="button" class="close-btn" data-bs-dismiss="modal"><i class="bi bi-x"></i></button>
+                        </div>
+                        <div class="modal-body">
+                            Live Video
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu-wrapper">
+                <div class="buttons-wrapper">
+                    <div class="button"><button type="button" data-bs-toggle="modal" data-bs-target="#popUpModal"><i class="bi bi-camera-video"></i> Live</button></div>
+                    <div class="button"><button type="button" data-bs-toggle="modal" data-bs-target="#popUpModal"><i class="bi bi-images"></i> Image</button></div>
+                    <div class="button"><button type="button" data-bs-toggle="modal" data-bs-target="#popUpModal"><i class="bi bi-compass"></i> Passes</button></div>
+                    <div class="button"><button type="button" data-bs-toggle="modal" data-bs-target="#popUpModal"><i class="bi bi-exclamation-square"></i> Conjunctions</button></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
     <script type="module" src="/main.js"></script>
-  </body>
+</body>
+
 </html>

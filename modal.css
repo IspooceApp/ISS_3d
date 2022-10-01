@@ -1,0 +1,30 @@
+.modal-content {
+    background-color: #2a2b2c !important;
+}
+
+.modal button.close-btn {
+    border: none;
+    outline: none;
+    background-color: transparent;
+    color: white !important;
+}
+
+.modal button.close-btn i {
+    font-size: 25px;
+}
+
+.modal-header,
+.modal-footer {
+    border-bottom-color: #575757 !important;
+    border-top-color: #575757 !important;
+}
+
+.modal-footer button {
+    background-color: white;
+    color: black !important;
+}
+
+.modal-footer button:hover,
+.modal-footer button:focus {
+    background-color: rgb(240, 240, 240) !important;
+}
