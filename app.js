@@ -66,7 +66,7 @@ async function getLocation() {
             document.querySelector('#iss_altitude').innerHTML = issObject.altitude + ' m';
             document.querySelector('#iss_timeStamp').innerHTML = issObject.timeStamp;
             document.querySelector('#iss_status').innerHTML = (issObject.visibility).charAt(0).toUpperCase() + (issObject.visibility).slice(1);
-        }, 3000);
+        }, 2000);
 
         document.querySelector('#myLocation').innerHTML = resData.slice(1, -1);
         document.querySelector('#myLocalTime').innerHTML = new Date().toLocaleTimeString('en-US');
