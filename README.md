@@ -4,18 +4,21 @@
 
  ***Clone the repo.***
  ```
-git status
-git add
-git commit
+git clone https://github.com/IspooceApp/ISS_3d.git
 ```
+```
+cd ISS_ed
+```
+```
+npm install
+``` 
 
- 
- 
  <ol>
- <li>cd ISS_3d</li>
- <li>npm install</li>
  <li>Download model from <a href="https://drive.google.com/drive/folders/169ZXvr8X_oZi-jxUoCQpWhKB6F__CzDr?usp=sharing">Here</a> and create Models in project root directory. Now place the models in that folder. </br>
- <li>npm run dev</li>
  </ol>
+
+```
+npm run dev
+```
 
 
