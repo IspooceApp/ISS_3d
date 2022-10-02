@@ -20,8 +20,9 @@ npm install
 ``` 
 
  <ol>
- <li>Download model from <a href="https://drive.google.com/drive/folders/169ZXvr8X_oZi-jxUoCQpWhKB6F__CzDr?usp=sharing">Here</a> and create Models in project root directory. Now place the models in that folder. </br>
+ <li>Download model from <a href="https://drive.google.com/drive/folders/169ZXvr8X_oZi-jxUoCQpWhKB6F__CzDr?usp=sharing">Here</a> and create "Models" directory in project root directory. Now place the models in "Models" folder. </br>
  </ol>
+
 
 ```
 npm run dev
