@@ -1,7 +1,11 @@
 # ISS_3d
-<br>npm install three</br>
-<br>npm install vite</br>
-<br>npm run dev</br>
-<br>npm install gsap</br>
 
-download models and add them to "Models" directory
+<b>Our web app can locate iss in 3D, view internals, predict and show realtime trajectory of iss. We also enable user to send realtime notification if the ISS is above users location. We have used data from Nasa's different resources. Futher we made our own programs and algorithms to do calculations like finding conjunction probability, iss alerts, path prediction, etc. </b>
+<hr />
+ <ol>
+ <li>Clone the repo.</li>
+ <li>cd ISS_3d</li>
+ <li>npm install</li>
+ <li>Download model from <a href="https://drive.google.com/drive/folders/169ZXvr8X_oZi-jxUoCQpWhKB6F__CzDr?usp=sharing">Here</a> and create Models in project root directory. Now place the models in that folder. </br>
+ <li>npm run dev</li>
+ </ol>
