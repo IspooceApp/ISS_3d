@@ -1,5 +1,5 @@
 import "./style.css";
-import {twoline2satrec, propagate} from "satellite.js"
+import * as satellite from "satellite.js"
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
@@ -162,11 +162,11 @@ loader.load(
 		scene.add(gltf.scene);
 
 		const iss_animations = gltf.animations;
-		const iss_scene = gltf.scene;
+		// const iss_scene = gltf.scene;
 		const iss_cameras = gltf.cameras;
 
-		iss_scene.scale.set(0.001, 0.001, 0.001);
-		iss_scene.position.set(10, 2, 3);
+		iss_model.scale.set(0.0001, 0.0001, 0.0001);
+		iss_model.position.set(10, 2, 3);
 
 		window.addEventListener("dblclick", function () {
 			// console.log(iss_cameras);
@@ -235,7 +235,7 @@ async function getTLE() {
 }
 
 let tle = await getTLE();
-let goddecide = 500;
+let goddecide = 4/6371;
 let delta = 0;
 let Clock = new THREE.Clock();
 camera.position.z = 8;
@@ -252,14 +252,19 @@ function animate() {
 	EarthMesh.rotation.y += (delta * 45 * Math.PI) / 180;
   if (iss_model && tle) {
 
-    var satrec = twoline2satrec(tle[0], tle[1]);
-    var position = propagate(satrec, new Date()).position;
+    var satrec = satellite.twoline2satrec(tle[0], tle[1]);
+    var gmst = satellite.gstime(new Date());
+    var positionAndVelocity = satellite.propagate(satrec, new Date());
+    var positionEci = positionAndVelocity.position;
+    var positionGd    = satellite.eciToGeodetic(positionEci, gmst)
+    var longitude =satellite.degreesLong(positionGd.longitude),
+    latitude  = satellite.degreesLat(positionGd.latitude),
+    height    = positionGd.height;
 
-    iss_model.position.x =position.x / goddecide;
-    iss_model.position.y =position.y / goddecide;
-    iss_model.position.z =position.z / goddecide;
-  var satrec = twoline2satrec(tle[0], tle[1]);
-  var position = propagate(satrec, new Date()).position;
+    iss_model.position.x =positionEci.x * goddecide;
+    iss_model.position.y =positionEci.y * goddecide;
+    iss_model.position.z =positionEci.z * goddecide;
+    console.log(positionEci, latitude, longitude, height);
   }
 	renderer.render(scene, camera);
 	requestAnimationFrame(animate);
