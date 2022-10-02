@@ -1,5 +1,5 @@
 import "./style.css";
-import * as satellite from "satellite.js"
+import * as satellite from "satellite.js";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
@@ -26,7 +26,6 @@ camera.lookAt(0, 0, 0);
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(devicePixelRatio);
 requestAnimationFrame(animate);
-
 
 document.body.appendChild(renderer.domElement);
 
@@ -141,11 +140,11 @@ const cloudMesh = new THREE.Mesh(
 	new THREE.SphereGeometry(4.1, 32, 32),
 	new THREE.MeshBasicMaterial({
 		map: new THREE.TextureLoader().load("textures/clouds.png"),
-		transparent: true, 
-		opacity: 0.4
+		transparent: true,
+		opacity: 0.4,
 	})
 );
-scene.add(cloudMesh)
+scene.add(cloudMesh);
 //Loading ISS model
 var iss_model;
 // LOADING ISS MODEL
@@ -155,39 +154,35 @@ loader.load(
 	"Models/ISS_2016.glb",
 
 	function (gltf) {
-    iss_model = gltf.scene;
+		iss_model = gltf.scene;
 		scene.add(gltf.scene);
-		const iss_scene = gltf.scene;  		
+		const iss_scene = gltf.scene;
 		iss_model.scale.set(0.0001, 0.0001, 0.0001);
-	window.addEventListener("dblclick", function () {
-		// console.log(iss_cameras);
-	  
-      var aabb = new THREE.Box3().setFromObject( gltf.scene );
-      var center = aabb.getCenter( new THREE.Vector3() );
-      var size = aabb.getSize( new THREE.Vector3() );
-      if (is_iss_selected === false) {
-        gsap.to( camera.position, {
-          duration: 1,
-          x: center.x,
-          y: center.y,
-          z: center.z + size.z + size.z, // maybe adding even more offset depending on your model
-          
-          });
-          is_iss_selected = true;
-      }
-      else {
-		camera.lookAt(0,0,0),
-		gsap.to( camera.position, {
-			duration: 1,
-			x: 0,
-			y: 0,
-			z: 10, // maybe adding even more offset depending on your model
-			
-			});
-        is_iss_selected = false;
-      }})
-    
+		window.addEventListener("dblclick", function () {
+			// console.log(iss_cameras);
 
+			var aabb = new THREE.Box3().setFromObject(gltf.scene);
+			var center = aabb.getCenter(new THREE.Vector3());
+			var size = aabb.getSize(new THREE.Vector3());
+			if (is_iss_selected === false) {
+				gsap.to(camera.position, {
+					duration: 1,
+					x: center.x,
+					y: center.y,
+					z: center.z + size.z + size.z, // maybe adding even more offset depending on your model
+				});
+				is_iss_selected = true;
+			} else {
+				camera.lookAt(0, 0, 0),
+					gsap.to(camera.position, {
+						duration: 1,
+						x: 0,
+						y: 0,
+						z: 10, // maybe adding even more offset depending on your model
+					});
+				is_iss_selected = false;
+			}
+		});
 	},
 	function (xhr) {
 		console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
@@ -196,7 +191,6 @@ loader.load(
 		console.log("An error happened", error);
 	}
 );
-
 
 // Camera and selection functions
 
@@ -212,99 +206,107 @@ scene.add(AmbientLight);
 // scene.add(clouds)
 async function getTLE() {
 	const res = await fetch(tleendpoint);
-  const tle = await res.json();
-  return tle
+	const tle = await res.json();
+	return tle;
 }
 
 let tle = await getTLE();
-let heightofiss= 6;
+let heightofiss = 6;
 let Clock = new THREE.Clock();
 camera.position.z = 8;
 
-function calcPosFromLatLonRad(lat,lon,radius){
-	var phi   = (90-lat)*(Math.PI/180);
-    var theta = (lon+180)*(Math.PI/180);
-    const x = -(radius * Math.sin(phi)*Math.cos(theta));
-    const z = (radius * Math.sin(phi)*Math.sin(theta));
-    const y = (radius * Math.cos(phi));
-    return [x,y,z];
-	
+function calcPosFromLatLonRad(lat, lon, radius) {
+	var phi = (90 - lat) * (Math.PI / 180);
+	var theta = (lon + 180) * (Math.PI / 180);
+	const x = -(radius * Math.sin(phi) * Math.cos(theta));
+	const z = radius * Math.sin(phi) * Math.sin(theta);
+	const y = radius * Math.cos(phi);
+	return [x, y, z];
 }
-
 
 // Render Line
 let line;
 function render_line() {
-var points = [];
+	var points = [];
 	for (var i = 0; i <= (90 || 1440 / 16); i += 1) {
-		const date = new Date((new Date()).getTime() + i * 60000);
-		var prp = satellite.propagate(satellite.twoline2satrec(tle[0], tle[1]), date)
-		var psneci = prp.position
-		var psngd =  satellite.eciToGeodetic(psneci,  satellite.gstime(new Date()))
-		var longitude =satellite.degreesLong(psngd.longitude),	
-		latitude  = satellite.degreesLat(psngd.latitude)
-		var pos_iss = calcPosFromLatLonRad(latitude, longitude, heightofiss)
-
+		const date = new Date(new Date().getTime() + i * 60000);
+		var prp = satellite.propagate(
+			satellite.twoline2satrec(tle[0], tle[1]),
+			date
+		);
+		var psneci = prp.position;
+		var psngd = satellite.eciToGeodetic(
+			psneci,
+			satellite.gstime(new Date())
+		);
+		var longitude = satellite.degreesLong(psngd.longitude),
+			latitude = satellite.degreesLat(psngd.latitude);
+		var pos_iss = calcPosFromLatLonRad(latitude, longitude, heightofiss);
 		points.push(new THREE.Vector3(pos_iss[0], pos_iss[1], pos_iss[2]));
 	}
 
 	const geometry = new THREE.BufferGeometry().setFromPoints(points);
-const lineMaterial = new THREE.LineBasicMaterial( { color: "rgb(252, 61, 33)", linewidth: 10, linecap:'round', linejoin:"bevel"} );
-const line = new THREE.Line( geometry, lineMaterial );
-scene.add(line);	
+	const lineMaterial = new THREE.LineBasicMaterial({
+		color: "rgb(252, 61, 33)",
+		linewidth: 10,
+		linecap: "round",
+		linejoin: "bevel",
+	});
+	const line = new THREE.Line(geometry, lineMaterial);
+	scene.add(line);
 }
 
-
+var satrec,
+	gmst,
+	positionAndVelocity,
+	positionEci,
+	positionGd,
+	longitude,
+	latitude,
+	height,
+	pos;
 function animate() {
 	let delta = 1;
 	time = new THREE.Clock().getElapsedTime();
 	delta = new THREE.Clock().getDelta();
 	time *= Math.floor(Date.now() / 1000);
-	console.log()
+	console.log();
 	uniforms.sunDirection.value.y = Math.sin(time);
 	uniforms.sunDirection.value.x = Math.cos(time);
 	// uniforms.sunDirection.value.copy(sunPosition);
 	// uniforms.sunDirection.value.normalize();
 	EarthMesh.rotation.x -= 0.0;
-	EarthMesh.rotation.y +=  (0.000035* 45 * Math.PI) / 180;
-	cloudMesh.rotation.y -= (0.00005* 45 * Math.PI) / 180;
-  
-	if (iss_model && tle) {
-    
-	var satrec = satellite.twoline2satrec(tle[0], tle[1]);
-    var gmst = satellite.gstime(new Date());
-    var positionAndVelocity = satellite.propagate(satrec, new Date());
-    var positionEci = positionAndVelocity.position;
-    var positionGd    = satellite.eciToGeodetic(positionEci, gmst)
-    var longitude =satellite.degreesLong(positionGd.longitude),
-	
-	latitude  = satellite.degreesLat(positionGd.latitude),
-    height    = positionGd.height;
-	
-	const pos = calcPosFromLatLonRad(latitude, longitude, heightofiss)
-    iss_model.position.x =pos[0];
-    iss_model.position.y =pos[1];
-    iss_model.position.z =pos[2];
-	
-	
-	if (is_iss_selected===true) {
-		camera.lookAt(pos[0], pos[1], pos[2])
-		controls.target.set(pos[0], pos[1], pos[2]);
-	}
-	else {
-		camera.lookAt(0,0,0)
-		controls.target.set(0,0,0)
-	}
-	window.addEventListener( 'resize', onWindowResize, false );
-	function onWindowResize(){
-		camera.aspect = window.innerWidth / window.innerHeight;
-		camera.updateProjectionMatrix();
-		renderer.setSize( window.innerWidth, window.innerHeight );
+	EarthMesh.rotation.y += (0.000035 * 45 * Math.PI) / 180;
+	cloudMesh.rotation.y -= (0.00005 * 45 * Math.PI) / 180;
 
+	if (iss_model && tle) {
+		satrec = satellite.twoline2satrec(tle[0], tle[1]);
+		gmst = satellite.gstime(new Date());
+		positionAndVelocity = satellite.propagate(satrec, new Date());
+		positionEci = positionAndVelocity.position;
+		positionGd = satellite.eciToGeodetic(positionEci, gmst);
+		(longitude = satellite.degreesLong(positionGd.longitude)),
+			(latitude = satellite.degreesLat(positionGd.latitude)),
+			(height = positionGd.height);
+		pos = calcPosFromLatLonRad(latitude, longitude, heightofiss);
+		iss_model.position.x = pos[0];
+		iss_model.position.y = pos[1];
+		iss_model.position.z = pos[2];
+
+		if (is_iss_selected === true) {
+			camera.lookAt(pos[0], pos[1], pos[2]);
+			controls.target.set(pos[0], pos[1], pos[2]);
+		} else {
+			camera.lookAt(0, 0, 0);
+			controls.target.set(0, 0, 0);
+		}
+		window.addEventListener("resize", onWindowResize, false);
+		function onWindowResize() {
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
+			renderer.setSize(window.innerWidth, window.innerHeight);
+		}
 	}
-	
-}
-	
 	renderer.render(scene, camera);
 	requestAnimationFrame(animate);
 }
