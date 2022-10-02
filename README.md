@@ -24,6 +24,6 @@ npm run dev
 
 <h3>When you open app in your browser you should see something like</h3>
 
-![](https://drive.google.com/file/d/1zxqSDp00FSRaAp2wE-dBxJb9wvEzBZUH/view?usp=sharing)
-![](https://drive.google.com/file/d/1tR1e2Lm82ZpWPBfDe3QF_HWJA_N3UxJc/view?usp=sharing)
-![](https://drive.google.com/file/d/1UZH6pKT3CEbio9cBFtN4Do4qmWpJQgie/view?usp=sharing)
+![frontend](https://drive.google.com/file/d/1zxqSDp00FSRaAp2wE-dBxJb9wvEzBZUH/view?usp=sharing)
+![frontend](https://drive.google.com/file/d/1tR1e2Lm82ZpWPBfDe3QF_HWJA_N3UxJc/view?usp=sharing)
+![function](https://drive.google.com/file/d/1UZH6pKT3CEbio9cBFtN4Do4qmWpJQgie/view?usp=sharing)
