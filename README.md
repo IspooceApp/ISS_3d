@@ -1,6 +1,6 @@
 # ISS_3d
 
-<b>Our web app can locate iss in 3D, view internals, predict and show realtime trajectory of iss. We also enable user to send realtime notification if the ISS is above users location. We have used data from Nasa's different resources. Futher we made our own programs and algorithms to do calculations like finding conjunction probability, iss alerts, path prediction, etc. </b>
+<b>Our web app can locate iss in 3D, view internals, predict and show realtime trajectory of iss. We also enable user to send realtime notification if the ISS is above users location. We have used data from NASA's different resources. Futher we have made our own programs and algorithms to do calculations like finding conjunction probability, iss alerts, path prediction, etc. </b>
 
 ***Clone the repo.***
  ```
