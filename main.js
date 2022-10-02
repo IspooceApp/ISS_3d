@@ -200,23 +200,6 @@ loader.load(
 	}
 );
 
-//HELPER FUNCTIONS
-
-//function to get XYZ coordinates (on Sphere) using latitude and longitude
-
-// function calcPosFromLatLonRad(lat, lon, radius) {
-// 	x = -(
-// 		radius *
-// 		Math.sin((90 - lat) * (Math.PI / 180)) *
-// 		Math.cos((lon + 180) * (Math.PI / 180))
-// 	);
-// 	z =
-// 		radius *
-// 		Math.sin((90 - lat) * (Math.PI / 180)) *
-// 		Math.sin((lon + 180) * (Math.PI / 180));
-// 	y = radius * Math.cos((90 - lat) * (Math.PI / 180));
-// 	return [x, y, z];
-// }
 
 // Camera and selection functions
 
@@ -237,19 +220,16 @@ async function getTLE() {
 }
 
 let tle = await getTLE();
-let goddecide = 4/6371;
+let heightofiss= 4.2;
 let delta = 0;
 let Clock = new THREE.Clock();
 camera.position.z = 8;
 function calcPosFromLatLonRad(lat,lon,radius){
-  
     var phi   = (90-lat)*(Math.PI/180);
     var theta = (lon+180)*(Math.PI/180);
-
     const x = -(radius * Math.sin(phi)*Math.cos(theta));
     const z = (radius * Math.sin(phi)*Math.sin(theta));
     const y = (radius * Math.cos(phi));
-  
     return [x,y,z];
 
 }
@@ -265,7 +245,6 @@ function animate() {
 	EarthMesh.rotation.x -= 0.0;
 	EarthMesh.rotation.y += (delta * 45 * Math.PI) / 180;
   if (iss_model && tle) {
-
     var satrec = satellite.twoline2satrec(tle[0], tle[1]);
     var gmst = satellite.gstime(new Date());
     var positionAndVelocity = satellite.propagate(satrec, new Date());
@@ -274,12 +253,10 @@ function animate() {
     var longitude =satellite.degreesLong(positionGd.longitude),
     latitude  = satellite.degreesLat(positionGd.latitude),
     height    = positionGd.height;
-	const pos = calcPosFromLatLonRad(latitude, longitude, 4.2)
+	const pos = calcPosFromLatLonRad(latitude, longitude, heightofiss)
     iss_model.position.x =pos[0];
     iss_model.position.y =pos[1];
     iss_model.position.z =pos[2];
-
-    console.log(positionEci, latitude, longitude, height, pos);
   }
 	renderer.render(scene, camera);
 	requestAnimationFrame(animate);
