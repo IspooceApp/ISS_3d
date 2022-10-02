@@ -6,20 +6,18 @@ main();
 async function getConnections() {
     let connectionConfig = {
         method: 'get',
-        url: 'https://www.n2yo.com/satellite/?s=25544',
+        url: 'https://www.ariss.org/current-status-of-iss-stations.html',
         headers: {}
     };
 
     const resConnection = await axios(connectionConfig);
     const resConnectionData = await (resConnection).data;
+
     const $ = Cheerio.load(resConnectionData);
-    const resCon = (parseHTML($('#satinfo div'))).text()
+    const resCon = (parseHTML($('#content .paragraph ul'))).text()
 
 
-
-    console.log(resCon.length)
-
-    console.log(resCon)
+    console.log(resConnectionData)
 }
 
 async function main() {
