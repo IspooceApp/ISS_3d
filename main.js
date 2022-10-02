@@ -3,7 +3,7 @@ import * as satellite from "satellite.js"
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { TextureLoader } from "three";
+import { CubeTexture, TextureLoader } from "three";
 import gsap from "gsap";
 import { FirstPersonControls } from "three/examples/jsm/controls/FirstPersonControls.js";
 // import atmospherevertexShader from './shaders/atmosphereFragment.glsl'
@@ -116,6 +116,8 @@ const EarthTexture = new THREE.TextureLoader().load("textures/Earth.jpg");
 const EarthBumpTexture = new TextureLoader().load("textures/Elevation.jpg");
 
 const EarthMesh = new THREE.Mesh(EarthGeometry, material);
+// const Zaxis = new THREE.Vector3(0,0,1);
+// EarthMesh.rotateOnWorldAxis(Zaxis, 0.4084)
 
 //Atmosphere
 
@@ -239,6 +241,18 @@ let goddecide = 4/6371;
 let delta = 0;
 let Clock = new THREE.Clock();
 camera.position.z = 8;
+function calcPosFromLatLonRad(lat,lon,radius){
+  
+    var phi   = (90-lat)*(Math.PI/180);
+    var theta = (lon+180)*(Math.PI/180);
+
+    const x = -(radius * Math.sin(phi)*Math.cos(theta));
+    const z = (radius * Math.sin(phi)*Math.sin(theta));
+    const y = (radius * Math.cos(phi));
+  
+    return [x,y,z];
+
+}
 function animate() {
 	time = new THREE.Clock().getElapsedTime();
 	delta = new THREE.Clock().getDelta();
@@ -260,11 +274,12 @@ function animate() {
     var longitude =satellite.degreesLong(positionGd.longitude),
     latitude  = satellite.degreesLat(positionGd.latitude),
     height    = positionGd.height;
+	const pos = calcPosFromLatLonRad(latitude, longitude, 4.2)
+    iss_model.position.x =pos[0];
+    iss_model.position.y =pos[1];
+    iss_model.position.z =pos[2];
 
-    iss_model.position.x =positionEci.x * goddecide;
-    iss_model.position.y =positionEci.y * goddecide;
-    iss_model.position.z =positionEci.z * goddecide;
-    console.log(positionEci, latitude, longitude, height);
+    console.log(positionEci, latitude, longitude, height, pos);
   }
 	renderer.render(scene, camera);
 	requestAnimationFrame(animate);
