@@ -16,7 +16,7 @@
 
     "preview": "vite preview",
 
-    "start": "node index"
+    "start": "vite"
 
   },
 
