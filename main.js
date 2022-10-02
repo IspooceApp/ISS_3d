@@ -136,11 +136,11 @@ const iss_material = new THREE.ShaderMaterial({
 var iss_model;
 const loader = new GLTFLoader();
 loader.load(
-	'Models/ISS_2016.glb',
+	'Models/ISS_2016_3.glb',
 	function (gltf) {
 		iss_model = gltf.scene;
 		scene.add(iss_model);
-		iss_model.scale.set(0.0001, 0.0001, 0.0001);
+		iss_model.scale.set(0.1, 0.1, 0.1);
 		iss_model.rotateX(90)
 		iss_model.rotateY(180)
 		iss_model.rotateY(60);
