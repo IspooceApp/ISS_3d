@@ -9,6 +9,12 @@ git clone https://github.com/IspooceApp/ISS_3d.git
 ```
 cd ISS_3d
 ```
+
+for windows users before 'npm i'
+```
+npm i esbuild-windows-64@0.15.9
+```
+
 ```
 npm install
 ``` 
