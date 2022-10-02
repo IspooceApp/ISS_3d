@@ -24,6 +24,6 @@ npm run dev
 
 <h3>When you open app in your browser you should see something like</h3>
 
-![frontend](https://github.com/IspooceApp/ISS_3d/blob/main/DEMO_IMAGES/IMAGES/Screenshot_1.png)
-![frontend](https://github.com/IspooceApp/ISS_3d/blob/main/DEMO_IMAGES/IMAGES/Screenshot_2.png)
-![function](https://github.com/IspooceApp/ISS_3d/blob/main/DEMO_IMAGES/IMAGES/Screenshot_3.png)
+![frontend](https://github.com/IspooceApp/ISS_3d/blob/main/IMAGES/Screenshot_1.png)
+![frontend](https://github.com/IspooceApp/ISS_3d/blob/main/IMAGES/Screenshot_2.png)
+![function](https://github.com/IspooceApp/ISS_3d/blob/main/IMAGES/Screenshot_3.png)
