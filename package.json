@@ -12,6 +12,8 @@
     "vite": "^3.1.0"
   },
   "dependencies": {
+    "gsap": "^3.11.2",
+    "satellite.js": "^4.1.4",
     "three": "^0.144.0"
   }
 }

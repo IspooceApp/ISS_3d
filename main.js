@@ -1,53 +1,43 @@
-import './style.css'
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { TextureLoader } from 'three';
-import gsap from 'gsap';
-import {FirstPersonControls } from 'three/examples/jsm/controls/FirstPersonControls.js'
+import "./style.css";
+import * as satellite from "satellite.js"
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { CubeTexture, TextureLoader } from "three";
+import gsap from "gsap";
+import { FirstPersonControls } from "three/examples/jsm/controls/FirstPersonControls.js";
 // import atmospherevertexShader from './shaders/atmosphereFragment.glsl'
 // import atmospherefragmentShader from './shaders/atmosphereFragment.glsl'
-
+const tleendpoint = "https://issinspooce.azurewebsites.net/tle";
 let time = 0;
 const renderer = new THREE.WebGLRenderer();
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera( 75, 
-  window.innerWidth / window.innerHeight, 
-  0.1, 
-  100,);
-  
-const controls = new OrbitControls( camera, renderer.domElement );
-camera.position.set( 0, 0, 40 );
-camera.lookAt( 0, 0, 0 )
+const camera = new THREE.PerspectiveCamera(
+	75,
+	window.innerWidth / window.innerHeight,
+	0.1,
+	100
+);
 
+const controls = new OrbitControls(camera, renderer.domElement);
+camera.position.set(0, 0, 40);
+camera.lookAt(0, 0, 0);
 
-renderer.setSize( window.innerWidth, window.innerHeight );
+renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(devicePixelRatio);
 requestAnimationFrame(animate);
 
-function resize(force) {
-  const canvas = renderer.domElement;
-  const width = canvas.clientWidth;
-  const height = canvas.clientHeight;
-  if (force || canvas.width !== width || canvas.height !== height) {
-    renderer.setSize(width, height, false);
-    camera.aspect = width / height;
-    camera.updateProjectionMatrix();
-  }
-}
-resize(true);
-document.body.appendChild( renderer.domElement );
-  
 
-  
+document.body.appendChild(renderer.domElement);
 
 const SpaceMesh = new THREE.Mesh(
-  new THREE.SphereGeometry(80,64,64),
-  new THREE.MeshBasicMaterial({
-    roughness: 1,
-    metalness: 0,
-    map: new THREE.TextureLoader().load('textures/milkyway.jpg')
-  }))
+	new THREE.SphereGeometry(80, 64, 64),
+	new THREE.MeshBasicMaterial({
+		roughness: 1,
+		metalness: 0,
+		map: new THREE.TextureLoader().load("textures/milkyway.jpg"),
+	})
+);
 
 SpaceMesh.material.side = THREE.BackSide;
 
@@ -99,30 +89,32 @@ void main() {
 const textureLoader = new THREE.TextureLoader();
 
 const uniforms = {
-  sunDirection: {value: new THREE.Vector3(0,0,0.2) },
-  dayTexture: { value: textureLoader.load( "textures/Earth.jpg" ) },
-  nightTexture: { value: textureLoader.load( "textures/nightlight.jpg" ) }
+	sunDirection: { value: new THREE.Vector3(0, 0, 0.2) },
+	dayTexture: { value: textureLoader.load("textures/Earth.jpg") },
+	nightTexture: { value: textureLoader.load("textures/nightlight.jpg") },
 };
 
 const material = new THREE.ShaderMaterial({
-  uniforms: uniforms,
-  vertexShader: nightVertexShader,
-  fragmentShader: nightFragmentShader,
+	uniforms: uniforms,
+	vertexShader: nightVertexShader,
+	fragmentShader: nightFragmentShader,
 });
 
 // Earth
-const EarthGeometry = new THREE.SphereGeometry(4,32,32);
-const EarthTexture = new THREE.TextureLoader().load('textures/Earth.jpg');
-const EarthBumpTexture = new TextureLoader().load('textures/Elevation.jpg')
+const EarthGeometry = new THREE.SphereGeometry(4, 32, 32);
+const EarthTexture = new THREE.TextureLoader().load("textures/Earth.jpg");
+const EarthBumpTexture = new TextureLoader().load("textures/Elevation.jpg");
 
-const EarthMesh = new THREE.Mesh(EarthGeometry,material);
+const EarthMesh = new THREE.Mesh(EarthGeometry, material);
+// const Zaxis = new THREE.Vector3(0,0,1);
+// EarthMesh.rotateOnWorldAxis(Zaxis, 0.4084)
 
 //Atmosphere
 
 const atmosphere = new THREE.Mesh(
-  new THREE.SphereGeometry(4.8,32,32),
-  new THREE.ShaderMaterial({
-    vertexShader:`
+	new THREE.SphereGeometry(4.8, 32, 32),
+	new THREE.ShaderMaterial({
+		vertexShader: `
     varying vec3 vertexNormal;
     
     void main(){
@@ -131,46 +123,45 @@ const atmosphere = new THREE.Mesh(
             position, 1.2
         );
     }`,
-    fragmentShader:`
+		fragmentShader: `
     varying vec3 vertexNormal;
     void main(){
         float intensity = pow(0.25 -dot(vertexNormal,vec3(0,0,1.0)), 2.0);
         gl_FragColor = vec4(0.3, 0.3,1.0, 1.0) * intensity;
     }`,
-    blending: THREE.AdditiveBlending,
-    side: THREE.BackSide
-  })
-)
-atmosphere.scale.set(1.001,1.01,1.05)
-scene.add(atmosphere)
-
+		blending: THREE.AdditiveBlending,
+		side: THREE.BackSide,
+	})
+);
+atmosphere.scale.set(1.001, 1.01, 1.05);
+scene.add(atmosphere);
 
 //Clouds
-// const clouds = new THREE.Mesh(
-//   new THREE.SphereGeometry(5,32,32),
-//   new THREE.TextureLoader().load('textures/clouds.png'));
-// clouds.scale.set(1.1,1.1,1.1)
-
-
-// LOADING ISS MODEL 
+const cloudMesh = new THREE.Mesh(
+	new THREE.SphereGeometry(4.1, 32, 32),
+	new THREE.MeshBasicMaterial({
+		map: new THREE.TextureLoader().load("textures/clouds.png"),
+		transparent: true, 
+		opacity: 0.4
+	})
+);
+scene.add(cloudMesh)
+//Loading ISS model
+var iss_model;
+// LOADING ISS MODEL
 var is_iss_selected = false;
 const loader = new GLTFLoader();
 loader.load(
-	'Models/ISS_2016.glb',
-	
-  function ( gltf ) {
-		scene.add( gltf.scene );
-    
-		const iss_animations = gltf.animations; 
-		const iss_scene = gltf.scene;  
-		const iss_cameras = gltf.cameras; 
+	"Models/ISS_2016.glb",
 
-
-    iss_scene.scale.set(0.001,0.001,0.001)
-    iss_scene.position.set(10,2,3)
-
-    window.addEventListener('dblclick', function() {
-      console.log(iss_cameras)
+	function (gltf) {
+    iss_model = gltf.scene;
+		scene.add(gltf.scene);
+		const iss_scene = gltf.scene;  		
+		iss_model.scale.set(0.0001, 0.0001, 0.0001);
+	window.addEventListener("dblclick", function () {
+		// console.log(iss_cameras);
+	  
       var aabb = new THREE.Box3().setFromObject( gltf.scene );
       var center = aabb.getCenter( new THREE.Vector3() );
       var size = aabb.getSize( new THREE.Vector3() );
@@ -180,49 +171,34 @@ loader.load(
           x: center.x,
           y: center.y,
           z: center.z + size.z + size.z, // maybe adding even more offset depending on your model
-          onUpdate: function() {
-            camera.lookAt( center );
-          }
-          } );
+          
+          });
           is_iss_selected = true;
       }
       else {
-        camera.lookAt(0, 0, 0)
+		camera.lookAt(0,0,0),
+		gsap.to( camera.position, {
+			duration: 1,
+			x: 0,
+			y: 0,
+			z: 10, // maybe adding even more offset depending on your model
+			
+			});
         is_iss_selected = false;
-      }
-      
-    })
+      }})
     
 
 	},
-	function ( xhr ) {
-		console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
-    
+	function (xhr) {
+		console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
 	},
-	function ( error ) {
-		console.log( 'An error happened' );
+	function (error) {
+		console.log("An error happened", error);
 	}
 );
 
-//HELPER FUNCTIONS
-
-//function to get XYZ coordinates (on Sphere) using latitude and longitude 
-
-function calcPosFromLatLonRad(lat,lon,radius){
-  x = -(radius * Math.sin((90-lat)*(Math.PI/180))*Math.cos((lon+180)*(Math.PI/180)));
-  z = (radius * Math.sin((90-lat)*(Math.PI/180))*Math.sin((lon+180)*(Math.PI/180)));
-  y = (radius * Math.cos((90-lat)*(Math.PI/180)));
-  return [x,y,z];
-}
-
-
-
 
 // Camera and selection functions
-
-
-
-
 
 //Lightings
 const AmbientLight = new THREE.AmbientLight(0xffffff, 0.4);
@@ -230,44 +206,107 @@ const AmbientLight = new THREE.AmbientLight(0xffffff, 0.4);
 // spotLight.position.copy( camera.position);
 // scene.add( spotLight );
 scene.add(EarthMesh);
-scene.add(SpaceMesh)
+scene.add(SpaceMesh);
 scene.add(AmbientLight);
 // scene.add(directionalLight);
 // scene.add(clouds)
+async function getTLE() {
+	const res = await fetch(tleendpoint);
+  const tle = await res.json();
+  return tle
+}
+
+let tle = await getTLE();
+let heightofiss= 6;
+let Clock = new THREE.Clock();
+camera.position.z = 8;
+
+function calcPosFromLatLonRad(lat,lon,radius){
+	var phi   = (90-lat)*(Math.PI/180);
+    var theta = (lon+180)*(Math.PI/180);
+    const x = -(radius * Math.sin(phi)*Math.cos(theta));
+    const z = (radius * Math.sin(phi)*Math.sin(theta));
+    const y = (radius * Math.cos(phi));
+    return [x,y,z];
+	
+}
 
 
+// Render Line
+let line;
+function render_line() {
+var points = [];
+	for (var i = 0; i <= (90 || 1440 / 16); i += 1) {
+		const date = new Date((new Date()).getTime() + i * 60000);
+		var prp = satellite.propagate(satellite.twoline2satrec(tle[0], tle[1]), date)
+		var psneci = prp.position
+		var psngd =  satellite.eciToGeodetic(psneci,  satellite.gstime(new Date()))
+		var longitude =satellite.degreesLong(psngd.longitude),	
+		latitude  = satellite.degreesLat(psngd.latitude)
+		var pos_iss = calcPosFromLatLonRad(latitude, longitude, heightofiss)
+
+		points.push(new THREE.Vector3(pos_iss[0], pos_iss[1], pos_iss[2]));
+	}
+
+	const geometry = new THREE.BufferGeometry().setFromPoints(points);
+const lineMaterial = new THREE.LineBasicMaterial( { color: "rgb(252, 61, 33)", linewidth: 10, linecap:'round', linejoin:"bevel"} );
+const line = new THREE.Line( geometry, lineMaterial );
+scene.add(line);	
+}
 
 
-camera.position.z =8 
 function animate() {
+	let delta = 1;
+	time = new THREE.Clock().getElapsedTime();
+	delta = new THREE.Clock().getDelta();
+	time *= Math.floor(Date.now() / 1000);
+	console.log()
+	uniforms.sunDirection.value.y = Math.sin(time);
+	uniforms.sunDirection.value.x = Math.cos(time);
+	// uniforms.sunDirection.value.copy(sunPosition);
+	// uniforms.sunDirection.value.normalize();
+	EarthMesh.rotation.x -= 0.0;
+	EarthMesh.rotation.y +=  (0.000035* 45 * Math.PI) / 180;
+	cloudMesh.rotation.y -= (0.00005* 45 * Math.PI) / 180;
   
+	if (iss_model && tle) {
+    
+	var satrec = satellite.twoline2satrec(tle[0], tle[1]);
+    var gmst = satellite.gstime(new Date());
+    var positionAndVelocity = satellite.propagate(satrec, new Date());
+    var positionEci = positionAndVelocity.position;
+    var positionGd    = satellite.eciToGeodetic(positionEci, gmst)
+    var longitude =satellite.degreesLong(positionGd.longitude),
+	
+	latitude  = satellite.degreesLat(positionGd.latitude),
+    height    = positionGd.height;
+	
+	const pos = calcPosFromLatLonRad(latitude, longitude, heightofiss)
+    iss_model.position.x =pos[0];
+    iss_model.position.y =pos[1];
+    iss_model.position.z =pos[2];
+	
+	
+	if (is_iss_selected===true) {
+		camera.lookAt(pos[0], pos[1], pos[2])
+		controls.target.set(pos[0], pos[1], pos[2]);
+	}
+	else {
+		camera.lookAt(0,0,0)
+		controls.target.set(0,0,0)
+	}
+	window.addEventListener( 'resize', onWindowResize, false );
+	function onWindowResize(){
+		camera.aspect = window.innerWidth / window.innerHeight;
+		camera.updateProjectionMatrix();
+		renderer.setSize( window.innerWidth, window.innerHeight );
 
-  time = (new THREE.Clock()).getElapsedTime();
-  delta = (new THREE.Clock()).getDelta();
-  time *= Math.floor(Date.now() / 1000)
-  resize();
-  
-  uniforms.sunDirection.value.y = Math.sin(time);
-  uniforms.sunDirection.value.x = Math.cos(time);
-  // uniforms.sunDirection.value.copy(sunPosition);
-  // uniforms.sunDirection.value.normalize();
-  EarthMesh.rotation.x -= 0.000
-  EarthMesh.rotation.y += delta * 45 * Math.PI / 180;
-  
-  renderer.render(scene, camera)
-  requestAnimationFrame(animate)
+	}
+	
 }
-
-function onMouseMove( event ) {
-	Mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-	Mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-
+	
+	renderer.render(scene, camera);
+	requestAnimationFrame(animate);
 }
-
-
-function onClick(event) {
-
-}
-
 
 animate();
