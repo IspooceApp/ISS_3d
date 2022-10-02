@@ -234,6 +234,12 @@ function calcPosFromLatLonRad(lat,lon,radius){
     return [x,y,z];
 
 }
+function getRotationSeed() {
+	clock = new THREE.Clock();
+	time = clock.getElapsedTime();
+	delta = clock.getDelta();
+
+}
 function animate() {
 	time = new THREE.Clock().getElapsedTime();
 	delta = new THREE.Clock().getDelta();
