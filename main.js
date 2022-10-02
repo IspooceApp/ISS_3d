@@ -136,19 +136,35 @@ const iss_material = new THREE.ShaderMaterial({
 var iss_model;
 const loader = new GLTFLoader();
 loader.load(
-	'Models/ISS_2016_3.glb',
+	'Models/ISS_2016.glb',
 	function (gltf) {
 		iss_model = gltf.scene;
 		scene.add(iss_model);
+		iss_model.scale.set(0.0001, 0.0001, 0.0001);
+		iss_model.rotateX(90)
+		iss_model.rotateY(180)
+		iss_model.rotateY(60);
+		iss_model.rotateY(90)
+		iss_model.rotateZ(60)
+		iss_model.rotateZ(90)
+		iss_model.rotateZ(30);
+		iss_model.rotateZ(20);
+		iss_model.rotateX(180)
+		iss_model.rotateZ(10)
+		iss_model.rotateX(90)
+		iss_model.rotateX(-30)
+		
 		gltf.scene.children[0].material = iss_material;
 		issParent.add(iss_model);
 		EarthMesh.add(issParent);
-  		iss_model.scale.set(1/5, 1/5, 1/5);
+  		// iss_model.scale.set(1/4000, 1/4000, 1/4000);
     	window.addEventListener("dblclick", function () {
 			// console.log(iss_cameras);
 			var aabb = new THREE.Box3().setFromObject(gltf.scene);
 			var center = aabb.getCenter(new THREE.Vector3());
 			var size = aabb.getSize(new THREE.Vector3());
+			
+			
 			if (is_iss_selected === false) {
 				gsap.to(camera.position, {
 					duration: 1,
@@ -283,7 +299,7 @@ function render_line() {
 	scene.add(line);
 
 }
-// render_line()
+render_line()
 
 camera.aspect = window.innerWidth / window.innerHeight;
 camera.updateProjectionMatrix();
@@ -341,13 +357,14 @@ function animate() {
 	hoverPieces();
 	renderer.render(scene, camera);
 	requestAnimationFrame(animate);
+	window.addEventListener( 'resize', onWindowResize, false );
+	function onWindowResize(){
+		camera.aspect = window.innerWidth / window.innerHeight;
+		camera.updateProjectionMatrix();
+		renderer.setSize( window.innerWidth, window.innerHeight );
+
+	}
 }
 
-function onClick(event) {}
 
-function onMouseMove(event) {
-  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-}
-window.addEventListener('mousemove', onMouseMove);
 animate();
