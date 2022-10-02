@@ -77,20 +77,33 @@ async function getLocation() {
 async function getConjunction() {
     const res = await axios({
         method: 'get',
-        url: 'http://127.0.0.1:9000/',
-        headers: {
-            'Accept': '*/*',
-            'Access-Control-Allow-Origin': '*',
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Credentials': true,
-            "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept"
-        },
-        crossorigin: true,
-        mode: "cors",
-        credentials: "omit"
+        url: 'https://conjunction.azurewebsites.net/',
+        headers: {},
     });
-    const resData = await res.data
-    document.querySelector('.modal-body').innerHTML = JSON.stringify(resData);
+    const resData = await JSON.parse(JSON.stringify(res.data))
+    console.log(resData)
+    const modal = document.querySelector('.conjunctions-wrapper');
+
+    for (let item = 0; item < resData.length; item++) {
+        modal.innerHTML += `<div class="conjunction">
+        <div>
+            <p>Object Details</p>
+            <span><a>Object: </a><a id="conjunction_object">${resData[item].object.name}</a></span>
+            <span><a>NORAD ID: </a><a id="conjunction_objectId">${resData[item].object.noradId}</a></span>
+            <span><a>Days Since Epoch: </a><a id="conjunction_object_dse">${resData[item].object.daysSinceEpoch}</a></span>
+        </div>
+        <div>
+            <p>Conjunction Details</p>
+            <span><a>Start: </a><a id="conjunction_start">${resData[item].conjunction.start}</a></span>
+            <span><a>Probability: </a><a id="conjunction_probability">${resData[item].conjunction.probability}</a></span>
+            <span><a>Dilution Threshold: </a><a id="dlt">${resData[item].conjunction.dilutionThreshold} km</a></span>
+            <span><a>Minimum Range: </a><a id="conjunction_minRange">${resData[item].conjunction.minRange} km</a></span>
+            <span><a>Velocity: </a><a id="conjunction_velocity">${resData[item].conjunction.velocity} km/sec</a></span>
+            <span><a>TCA: </a><a id="conjunction_tca">${resData[item].conjunction.tca}</a></span>
+            <span><a>Stop: </a><a id="conjunction_stop">${resData[item].conjunction.stop}</a></span>
+        </div>
+    </div>`;
+    }
 }
 async function main() {
     await getLocation();
