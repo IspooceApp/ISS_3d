@@ -48,7 +48,7 @@ const SpaceMesh = new THREE.Mesh(
 	new THREE.MeshBasicMaterial({
 		roughness: 1,
 		metalness: 0,
-		map: new THREE.TextureLoader().load("textures/milkyway.jpg"),
+		map: new THREE.TextureLoader().load("textures/8k_stars.jpg"),
 	})
 );
   
