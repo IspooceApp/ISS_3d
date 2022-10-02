@@ -1,33 +1,54 @@
+
 import "./style.css";
 import * as satellite from "satellite.js";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { CubeTexture, TextureLoader } from "three";
+import { CubeTexture, TextureLoader, Vector4 } from "three";
 import gsap from "gsap";
 import { FirstPersonControls } from "three/examples/jsm/controls/FirstPersonControls.js";
-// import atmospherevertexShader from './shaders/atmosphereFragment.glsl'
-// import atmospherefragmentShader from './shaders/atmosphereFragment.glsl'
+import atmospherevertexShader from './shaders/atmosphereFragment.glsl'
+import atmospherefragmentShader from './shaders/atmosphereFragment.glsl'
+import nightFragmentShader from './shaders/nightFragShader.glsl'
+import nightVertexShader   from './shaders/nightVertexShader.glsl'
+import issVertexShader from './shaders/issVertexShader.glsl'
+import issFragmentShader from './shaders/issFragShader.glsl'
 const tleendpoint = "https://issinspooce.azurewebsites.net/tle";
 let time = 0;
-const renderer = new THREE.WebGLRenderer();
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(
-	75,
-	window.innerWidth / window.innerHeight,
-	0.1,
-	100
-);
 
-const controls = new OrbitControls(camera, renderer.domElement);
-camera.position.set(0, 0, 40);
-camera.lookAt(0, 0, 0);
+const renderer = new THREE.WebGLRenderer();
 
-renderer.setSize(window.innerWidth, window.innerHeight);
+//camera-------------------------------------------------------------------------------------->
+const camera = new THREE.PerspectiveCamera( 75, 
+  window.innerWidth / window.innerHeight, 
+  0.1, 
+  1000,);
+const controls = new OrbitControls( camera, renderer.domElement );
+camera.position.set( 0, 0, 40 );
+camera.lookAt( 0, 0, 0 )
+
+//renderer ------------------------------------------------------------------------------------>
+renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.setPixelRatio(devicePixelRatio);
 requestAnimationFrame(animate);
 
-document.body.appendChild(renderer.domElement);
+function resize(force) {
+  const canvas = renderer.domElement;
+  const width = canvas.clientWidth;
+  const height = canvas.clientHeight;
+  if (force || canvas.width !== width || canvas.height !== height) {
+    renderer.setSize(width, height, false);
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+  }
+}
+resize(true);
+document.body.appendChild( renderer.domElement );
+  
+
+  
+//SpaceMesh ------------------------------------------------------------------------------------>
 
 const SpaceMesh = new THREE.Mesh(
 	new THREE.SphereGeometry(80, 64, 64),
@@ -37,56 +58,13 @@ const SpaceMesh = new THREE.Mesh(
 		map: new THREE.TextureLoader().load("textures/milkyway.jpg"),
 	})
 );
-
+  
 SpaceMesh.material.side = THREE.BackSide;
+SpaceMesh.name = 'spacemesh';
 
-//DAY AND NIGHT SHADER
 
-const nightFragmentShader = `
-uniform sampler2D dayTexture;
-uniform sampler2D nightTexture;
-
-varying vec2 vUv;
-varying vec3 vNormal;
-varying vec3 vSunDir;
-
-void main(void) {
-    vec3 dayColor = texture2D(dayTexture, vUv).rgb;
-    vec3 nightColor = texture2D(nightTexture, vUv).rgb;
-
-    float cosineAngleSunToNormal = dot(normalize(vNormal), normalize(vSunDir));
-
-    cosineAngleSunToNormal = clamp(cosineAngleSunToNormal * 20.0, -1.0, 1.0);
-
-    float mixAmount = cosineAngleSunToNormal * 0.6+ 0.5;
-
-    vec3 color = mix(nightColor, dayColor, mixAmount);
-
-    gl_FragColor = vec4(color, 1.0);
-}
-
-`;
-
-const nightVertexShader = `
-varying vec2 vUv;
-varying vec3 vNormal;
-varying vec3 vSunDir;
-
-uniform vec3 sunDirection;
-
-void main() {
-    vUv = uv;
-    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-
-    vNormal = normalMatrix * normal;
-    vSunDir = mat3(viewMatrix) * sunDirection;
-
-    gl_Position = projectionMatrix * mvPosition;
-}
-`;
-
+//Earth------------------------------------------------------------------------------>
 const textureLoader = new THREE.TextureLoader();
-
 const uniforms = {
 	sunDirection: { value: new THREE.Vector3(0, 0, 0.2) },
 	dayTexture: { value: textureLoader.load("textures/Earth.jpg") },
@@ -99,41 +77,40 @@ const material = new THREE.ShaderMaterial({
 	fragmentShader: nightFragmentShader,
 });
 
-// Earth
-const EarthGeometry = new THREE.SphereGeometry(4, 32, 32);
-const EarthTexture = new THREE.TextureLoader().load("textures/Earth.jpg");
-const EarthBumpTexture = new TextureLoader().load("textures/Elevation.jpg");
 
-const EarthMesh = new THREE.Mesh(EarthGeometry, material);
-// const Zaxis = new THREE.Vector3(0,0,1);
-// EarthMesh.rotateOnWorldAxis(Zaxis, 0.4084)
+const EarthGeometry = new THREE.SphereGeometry(4,32,32);
+const EarthTexture = new THREE.TextureLoader().load('textures/Earth.jpg');
+const EarthBumpTexture = new TextureLoader().load('textures/Elevation.jpg');
 
-//Atmosphere
+const EarthMesh = new THREE.Mesh(EarthGeometry,material);
+EarthMesh.name = 'Earth';
+
+
+//Atmosphere----------------------------------------------------------------------------------->
 
 const atmosphere = new THREE.Mesh(
-	new THREE.SphereGeometry(4.8, 32, 32),
-	new THREE.ShaderMaterial({
-		vertexShader: `
-    varying vec3 vertexNormal;
-    
-    void main(){
-        vertexNormal = normal;
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(
-            position, 1.2
-        );
-    }`,
-		fragmentShader: `
-    varying vec3 vertexNormal;
-    void main(){
-        float intensity = pow(0.25 -dot(vertexNormal,vec3(0,0,1.0)), 2.0);
-        gl_FragColor = vec4(0.3, 0.3,1.0, 1.0) * intensity;
-    }`,
-		blending: THREE.AdditiveBlending,
-		side: THREE.BackSide,
-	})
-);
-atmosphere.scale.set(1.001, 1.01, 1.05);
-scene.add(atmosphere);
+
+  new THREE.SphereGeometry(4.8,32,32),
+  new THREE.ShaderMaterial({
+    vertexShader: atmospherevertexShader,
+    fragmentShader: atmospherefragmentShader,
+    blending: THREE.AdditiveBlending,
+    side: THREE.BackSide
+  })
+)
+atmosphere.name = 'atmoshpere';
+atmosphere.scale.set(1.001,1.01,1.05)
+scene.add(atmosphere)
+
+//particle emitter ---------------------------------------------------------------------->
+const issParent = new THREE.Object3D();
+const trans = new THREE.MeshBasicMaterial({color: 1, transparent:true, opacity:0});
+const geometry = new THREE.BoxGeometry( 2/10, 1/10 , 3/10 );
+const cube = new THREE.Mesh( geometry, trans );
+cube.position.set(10,2,3);
+cube.rotation.set(0,0,90);
+cube.name = 'ISS';
+issParent.add( cube );
 
 //Clouds
 const cloudMesh = new THREE.Mesh(
@@ -145,20 +122,43 @@ const cloudMesh = new THREE.Mesh(
 	})
 );
 scene.add(cloudMesh);
-//Loading ISS model
-var iss_model;
-// LOADING ISS MODEL
+
+// LOADING ISS MODEL--------------------------------------------------------------------> 
+
 var is_iss_selected = false;
+var highlightColor = new THREE.Vector3(0.0,0.0,0.0);
+const iss_material = new THREE.ShaderMaterial({
+  vertexShader:issVertexShader,
+  fragmentShader: issFragmentShader,
+  uniforms: {
+    hover:{value: highlightColor}
+  }
+});
+
+
+
 const loader = new GLTFLoader();
 loader.load(
+	'Models/ISS_2016_3.glb',
+	
+  function ( gltf ) {
+		
 	"Models/ISS_2016.glb",
 
 	function (gltf) {
 		iss_model = gltf.scene;
 		scene.add(gltf.scene);
 		const iss_scene = gltf.scene;
-		iss_model.scale.set(0.0001, 0.0001, 0.0001);
-		window.addEventListener("dblclick", function () {
+    gltf.scene.children[0].material = iss_material;
+
+    issParent.add(iss_model);
+    EarthMesh.add(issParent);
+    
+    
+    
+    
+    iss_model.scale.set(0.0001, 0.0001, 0.0001);
+    window.addEventListener("dblclick", function () {
 			// console.log(iss_cameras);
 
 			var aabb = new THREE.Box3().setFromObject(gltf.scene);
@@ -183,6 +183,7 @@ loader.load(
 				is_iss_selected = false;
 			}
 		});
+
 	},
 	function (xhr) {
 		console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
@@ -192,9 +193,8 @@ loader.load(
 	}
 );
 
-// Camera and selection functions
+//Lightings------------------------------------------------------------------------------->
 
-//Lightings
 const AmbientLight = new THREE.AmbientLight(0xffffff, 0.4);
 // const spotLight = new THREE.AmbientLight( 0xffffff );
 // spotLight.position.copy( camera.position);
@@ -204,6 +204,75 @@ scene.add(SpaceMesh);
 scene.add(AmbientLight);
 // scene.add(directionalLight);
 // scene.add(clouds)
+
+
+
+//Mouse Events------------------------------------------------------------------------------>
+
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+
+function onMouseMove(event) {
+
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+}
+window.addEventListener('mousemove', onMouseMove);
+
+function hoverPieces() {
+  raycaster.setFromCamera(mouse,camera);
+  var obj = [];
+  obj.push(cube);
+  var found = raycaster.intersectObjects(obj);
+
+  if(found.length > 0 && found[0].object.name ==='ISS')
+  {
+    console.log('found object: '+ found[0].object.name);
+    highlightColor.x = 0.8;
+    highlightColor.y = -0.2;
+    highlightColor.z = -0.2;
+    setTimeout(function()
+    {
+      highlightColor.x = 0.0;
+      highlightColor.y = 0.0;
+      highlightColor.z = 0.0;
+    },1000);
+  }
+}
+
+//animate --------------------------------->
+
+camera.position.z =8 
+
+let delta =0;
+let clock = new THREE.Clock();
+function animate() {
+
+  time *=0.01; 
+  // time  =  clock.getElapsedTime();
+  // delta = clock.getDelta();
+  // time *= Math.floor(Date.now() / 1000)
+  resize();
+
+  uniforms.sunDirection.value.y = Math.sin(time);
+  uniforms.sunDirection.value.x = Math.cos(time);
+  // uniforms.sunDirection.value.copy(sunPosition);
+  // uniforms.sunDirection.value.normalize();
+  // EarthMesh.rotation.x -= 0.000
+  // EarthMesh.rotation.y += delta * 45 * Math.PI / 180;
+  
+  
+  EarthMesh.rotation.x -= 0.000
+  EarthMesh.rotation.y += 0.001
+
+  // issParent.rotation.x -= 0.000
+  // issParent.rotation.y += 0.01
+
+  hoverPieces();
+  renderer.render(scene, camera)
+  requestAnimationFrame(animate)
+  
 async function getTLE() {
 	const res = await fetch(tleendpoint);
 	const tle = await res.json();
@@ -254,6 +323,7 @@ function render_line() {
 	});
 	const line = new THREE.Line(geometry, lineMaterial);
 	scene.add(line);
+
 }
 
 var satrec,
