@@ -223,6 +223,7 @@ let tle = await getTLE();
 let heightofiss= 4.2;
 let delta = 0;
 let Clock = new THREE.Clock();
+var satrec, gmst, positionAndVelocity, positionEci, positionGd, longitude, latitude, height, pos
 camera.position.z = 8;
 function calcPosFromLatLonRad(lat,lon,radius){
     var phi   = (90-lat)*(Math.PI/180);
@@ -245,15 +246,15 @@ function animate() {
 	EarthMesh.rotation.x -= 0.0;
 	EarthMesh.rotation.y += (delta * 45 * Math.PI) / 180;
   if (iss_model && tle) {
-    var satrec = satellite.twoline2satrec(tle[0], tle[1]);
-    var gmst = satellite.gstime(new Date());
-    var positionAndVelocity = satellite.propagate(satrec, new Date());
-    var positionEci = positionAndVelocity.position;
-    var positionGd    = satellite.eciToGeodetic(positionEci, gmst)
-    var longitude =satellite.degreesLong(positionGd.longitude),
+    satrec = satellite.twoline2satrec(tle[0], tle[1]);
+    gmst = satellite.gstime(new Date());
+    positionAndVelocity = satellite.propagate(satrec, new Date());
+    positionEci = positionAndVelocity.position;
+    positionGd    = satellite.eciToGeodetic(positionEci, gmst)
+    longitude =	satellite.degreesLong(positionGd.longitude),
     latitude  = satellite.degreesLat(positionGd.latitude),
     height    = positionGd.height;
-	const pos = calcPosFromLatLonRad(latitude, longitude, heightofiss)
+	pos = calcPosFromLatLonRad(latitude, longitude, heightofiss)
     iss_model.position.x =pos[0];
     iss_model.position.y =pos[1];
     iss_model.position.z =pos[2];
