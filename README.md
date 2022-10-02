@@ -1,7 +1,13 @@
 # ISS_3d
-<br>npm install three</br>
-<br>npm install vite</br>
-<br>npm run dev</br>
-<br>npm install gsap</br>
+## to install all the necessary packages 
+```bash
+npm install
+```
+## to run the project in dev mode 
+```bash
+npm run dev
+```
 
-download models and add them to "Models" directory
+download models and add them to `Models` directory
+
+
