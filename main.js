@@ -8,7 +8,7 @@ import gsap from "gsap";
 import { FirstPersonControls } from "three/examples/jsm/controls/FirstPersonControls.js";
 // import atmospherevertexShader from './shaders/atmosphereFragment.glsl'
 // import atmospherefragmentShader from './shaders/atmosphereFragment.glsl'
-const tleendpoint = "http://127.0.0.1:8000/tle";
+const tleendpoint = "https://issinspooce.azurewebsites.net/tle";
 let time = 0;
 const renderer = new THREE.WebGLRenderer();
 const scene = new THREE.Scene();
