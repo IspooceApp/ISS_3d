@@ -4,6 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { TextureLoader } from 'three';
 import gsap from 'gsap';
+import fs from 'node:fs'
 
 import { FirstPersonControls } from 'three/examples/jsm/controls/FirstPersonControls.js'
 // import atmospherevertexShader from './shaders/atmosphereFragment.glsl'
@@ -272,11 +273,3 @@ function onClick(event) {
 
 
 animate();
-
-
-
-
-
-
-
-// ---------------------------------------------------------------------------------------

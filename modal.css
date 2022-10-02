@@ -1,5 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@100;200;300;400;500;600;700&display=swap');
+* {
+    margin: 0;
+    padding: 0;
+    color: white;
+    font-family: 'IBM Plex Mono', monospace;
+}
+
 .modal-content {
     background-color: #2a2b2c !important;
+    color: white;
+}
+
+.modal-body {
+    height: 70vh;
+    max-height: 70vh;
+    overflow: auto;
 }
 
 .modal button.close-btn {
@@ -27,4 +42,61 @@
 .modal-footer button:hover,
 .modal-footer button:focus {
     background-color: rgb(240, 240, 240) !important;
+}
+
+.conjunctions-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    overflow: auto;
+}
+
+.conjunctions-wrapper .conjunction {
+    padding: 10px;
+    width: 97.5%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    box-shadow: 0 5px 10px #181818;
+    border: 1px solid #575757;
+    margin: 0 0 10px 0;
+}
+
+.conjunctions-wrapper .conjunction div {
+    padding: 0 5px 0 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.conjunctions-wrapper .conjunction div *:not(p) {
+    letter-spacing: -0.5px;
+    word-spacing: -2px;
+}
+
+.conjunctions-wrapper .conjunction div *:not(p,
+a:nth-child(2)) {
+    margin-left: 5px;
+}
+
+.conjunctions-wrapper .conjunction div p {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.conjunctions-wrapper .conjunction span a:first-child {
+    color: rgb(0, 217, 0);
+    font-weight: 500;
+}
+
+.conjunctions-wrapper .conjunction span a:last-child {
+    color: #f0f8ff;
 }

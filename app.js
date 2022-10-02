@@ -1,4 +1,5 @@
 import axios from 'axios';
+import cors from 'cors';
 
 main();
 
@@ -73,7 +74,25 @@ async function getLocation() {
 
     }
 }
-
+async function getConjunction() {
+    const res = await axios({
+        method: 'get',
+        url: 'http://127.0.0.1:9000/',
+        headers: {
+            'Accept': '*/*',
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Credentials': true,
+            "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept"
+        },
+        crossorigin: true,
+        mode: "cors",
+        credentials: "omit"
+    });
+    const resData = await res.data
+    document.querySelector('.modal-body').innerHTML = JSON.stringify(resData);
+}
 async function main() {
     await getLocation();
+    getConjunction();
 }

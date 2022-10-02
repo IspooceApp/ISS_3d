@@ -2,17 +2,23 @@
     "name": "earth-3d",
     "private": true,
     "version": "0.0.0",
+    "main": "node index.js",
     "type": "module",
     "scripts": {
         "dev": "vite",
         "build": "vite build",
-        "preview": "vite preview"
+        "preview": "vite preview",
+        "start": "node index"
     },
     "devDependencies": {
         "vite": "^3.1.0"
     },
     "dependencies": {
         "axios": "^0.27.2",
+        "cheerio": "^1.0.0-rc.12",
+        "cors": "^2.8.5",
+        "express": "^4.18.1",
+        "form-data": "^4.0.0",
         "gsap": "^3.11.2",
         "node-fetch": "^3.2.10",
         "three": "^0.144.0"

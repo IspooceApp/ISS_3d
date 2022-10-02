@@ -3,7 +3,6 @@
 
 <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite App</title>
 
@@ -15,8 +14,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-
-    <script type="module" src="./app.js"></script>
 </head>
 
 <body>
@@ -101,7 +98,46 @@
                             <button type="button" class="close-btn" data-bs-dismiss="modal"><i class="bi bi-x"></i></button>
                         </div>
                         <div class="modal-body">
-                            Live Video
+                            <div class="conjunctions-wrapper">
+                                <div class="conjunction">
+                                    <div>
+                                        <p>Object Details</p>
+                                        <span><a>Object: </a><a id="conjunction_object">SPACEBEE-78</a></span>
+                                        <span><a>NORAD ID: </a><a id="conjunction_objectId">47710</a></span>
+                                        <span><a>Days Since Epoch: </a><a id="conjunction_object_dse">1.480</a></span>
+                                    </div>
+                                    <div>
+                                        <p>Conjunction Details</p>
+                                        <span><a>Start: </a><a id="conjunction_start">2022 Oct 03 00:21:06.507</a></span>
+                                        <span><a>Probability: </a><a id="conjunction_probability">0.00001848</a></span>
+                                        <span><a>Dilution Threshold: </a><a id="dlt">1.370 km</a></span>
+                                        <span><a>Minimum Range: </a><a id="conjunction_minRange">2.492 km</a></span>
+                                        <span><a>Velocity: </a><a id="conjunction_velocity">14.679 km/sec</a></span>
+                                        <span><a>TCA: </a><a id="conjunction_tca">2022 Oct 03 00:21:06.802</a></span>
+                                        <span><a>Stop: </a><a id="conjunction_stop">2022 Oct 03 00:21:07.097</a></span>
+                                    </div>
+                                </div>
+
+                                <div class="conjunction">
+                                    <div>
+                                        <p>Object Details</p>
+                                        <span><a>Object: </a><a id="conjunction_object">SPACEBEE-78</a></span>
+                                        <span><a>NORAD ID: </a><a id="conjunction_objectId">47710</a></span>
+                                        <span><a>Days Since Epoch: </a><a id="conjunction_object_dse">1.480</a></span>
+                                    </div>
+                                    <div>
+                                        <p>Conjunction Details</p>
+                                        <span><a>Start: </a><a id="conjunction_start">2022 Oct 03 00:21:06.507</a></span>
+                                        <span><a>Probability: </a><a id="conjunction_probability">0.00001848</a></span>
+                                        <span><a>Dilution Threshold: </a><a id="dlt">1.370 km</a></span>
+                                        <span><a>Minimum Range: </a><a id="conjunction_minRange">2.492 km</a></span>
+                                        <span><a>Velocity: </a><a id="conjunction_velocity">14.679 km/sec</a></span>
+                                        <span><a>TCA: </a><a id="conjunction_tca">2022 Oct 03 00:21:06.802</a></span>
+                                        <span><a>Stop: </a><a id="conjunction_stop">2022 Oct 03 00:21:07.097</a></span>
+                                    </div>
+                                </div>
+
+                            </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -121,8 +157,9 @@
 
         </div>
     </div>
-
     <script type="module" src="/main.js"></script>
+    <script type="module" src="./app.js"></script>
+
 </body>
 
 </html>
