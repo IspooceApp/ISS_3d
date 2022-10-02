@@ -9,7 +9,10 @@
     -webkit-user-drag: none;
 }
 
+
+
 canvas {
+
     position: fixed;
     top: 0;
     left: 0;
@@ -120,3 +123,4 @@ canvas[data-engine='three.js'] {
 .menu-wrapper .buttons-wrapper div button i {
     font-size: 18px;
 }
+
