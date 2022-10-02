@@ -1,4 +1,3 @@
-
 import "./style.css";
 import * as satellite from "satellite.js";
 import * as THREE from "three";
@@ -6,8 +5,8 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { CubeTexture, TextureLoader, Vector4 } from "three";
 import gsap from "gsap";
-import { FirstPersonControls } from "three/examples/jsm/controls/FirstPersonControls.js";
-import atmospherevertexShader from './shaders/atmosphereFragment.glsl'
+// import { FirstPersonControls } from "three/examples/jsm/controls/FirstPersonControls.js";
+import atmospherevertexShader from './shaders/atmosphereVertex.glsl'
 import atmospherefragmentShader from './shaders/atmosphereFragment.glsl'
 import nightFragmentShader from './shaders/nightFragShader.glsl'
 import nightVertexShader   from './shaders/nightVertexShader.glsl'
@@ -33,17 +32,11 @@ renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.setPixelRatio(devicePixelRatio);
 requestAnimationFrame(animate);
 
-function resize(force) {
-  const canvas = renderer.domElement;
-  const width = canvas.clientWidth;
-  const height = canvas.clientHeight;
-  if (force || canvas.width !== width || canvas.height !== height) {
-    renderer.setSize(width, height, false);
-    camera.aspect = width / height;
-    camera.updateProjectionMatrix();
-  }
-}
-resize(true);
+const canvas = renderer.domElement;
+
+renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
+camera.aspect = canvas.clientWidth/ canvas.clientHeight;
+camera.updateProjectionMatrix();
 document.body.appendChild( renderer.domElement );
   
 
@@ -84,31 +77,31 @@ const EarthBumpTexture = new TextureLoader().load('textures/Elevation.jpg');
 
 const EarthMesh = new THREE.Mesh(EarthGeometry,material);
 EarthMesh.name = 'Earth';
+console.log("earth mess created")
 
 
 //Atmosphere----------------------------------------------------------------------------------->
 
 const atmosphere = new THREE.Mesh(
-
-  new THREE.SphereGeometry(4.8,32,32),
-  new THREE.ShaderMaterial({
-    vertexShader: atmospherevertexShader,
-    fragmentShader: atmospherefragmentShader,
-    blending: THREE.AdditiveBlending,
-    side: THREE.BackSide
-  })
-)
+	new THREE.SphereGeometry(4.8, 32, 32),
+	new THREE.ShaderMaterial({
+		vertexShader: atmospherevertexShader,
+		fragmentShader: atmospherefragmentShader,
+		blending: THREE.AdditiveBlending,
+		side: THREE.BackSide,
+	})
+);
 atmosphere.name = 'atmoshpere';
 atmosphere.scale.set(1.001,1.01,1.05)
 scene.add(atmosphere)
-
+console.log('atmosphere added')
 //particle emitter ---------------------------------------------------------------------->
-const issParent = new THREE.Object3D();
+var issParent = new THREE.Object3D();
 const trans = new THREE.MeshBasicMaterial({color: 1, transparent:true, opacity:0});
-const geometry = new THREE.BoxGeometry( 2/10, 1/10 , 3/10 );
+const geometry = new THREE.BoxGeometry( 2/5, 1/5 , 3/5 );
 const cube = new THREE.Mesh( geometry, trans );
 cube.position.set(10,2,3);
-cube.rotation.set(0,0,90);
+// cube.rotation.set(0,0,3.14/2);
 cube.name = 'ISS';
 issParent.add( cube );
 
@@ -122,11 +115,13 @@ const cloudMesh = new THREE.Mesh(
 	})
 );
 scene.add(cloudMesh);
-
+console.log("cloud added")
 // LOADING ISS MODEL--------------------------------------------------------------------> 
 
 var is_iss_selected = false;
-var highlightColor = new THREE.Vector3(0.0,0.0,0.0);
+var highlightColor = new THREE.Vector3(0,0,0);
+
+
 const iss_material = new THREE.ShaderMaterial({
   vertexShader:issVertexShader,
   fragmentShader: issFragmentShader,
@@ -135,32 +130,19 @@ const iss_material = new THREE.ShaderMaterial({
   }
 });
 
-
-
+var iss_model;
 const loader = new GLTFLoader();
 loader.load(
 	'Models/ISS_2016_3.glb',
-	
-  function ( gltf ) {
-		
-	"Models/ISS_2016.glb",
-
 	function (gltf) {
 		iss_model = gltf.scene;
-		scene.add(gltf.scene);
-		const iss_scene = gltf.scene;
-    gltf.scene.children[0].material = iss_material;
-
-    issParent.add(iss_model);
-    EarthMesh.add(issParent);
-    
-    
-    
-    
-    iss_model.scale.set(0.0001, 0.0001, 0.0001);
-    window.addEventListener("dblclick", function () {
+		scene.add(iss_model);
+		gltf.scene.children[0].material = iss_material;
+		issParent.add(iss_model);
+		EarthMesh.add(issParent);
+  		iss_model.scale.set(1/5, 1/5, 1/5);
+    	window.addEventListener("dblclick", function () {
 			// console.log(iss_cameras);
-
 			var aabb = new THREE.Box3().setFromObject(gltf.scene);
 			var center = aabb.getCenter(new THREE.Vector3());
 			var size = aabb.getSize(new THREE.Vector3());
@@ -207,18 +189,11 @@ scene.add(AmbientLight);
 
 
 
+
 //Mouse Events------------------------------------------------------------------------------>
 
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
-
-function onMouseMove(event) {
-
-  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-}
-window.addEventListener('mousemove', onMouseMove);
 
 function hoverPieces() {
   raycaster.setFromCamera(mouse,camera);
@@ -243,36 +218,7 @@ function hoverPieces() {
 
 //animate --------------------------------->
 
-camera.position.z =8 
 
-let delta =0;
-let clock = new THREE.Clock();
-function animate() {
-
-  time *=0.01; 
-  // time  =  clock.getElapsedTime();
-  // delta = clock.getDelta();
-  // time *= Math.floor(Date.now() / 1000)
-  resize();
-
-  uniforms.sunDirection.value.y = Math.sin(time);
-  uniforms.sunDirection.value.x = Math.cos(time);
-  // uniforms.sunDirection.value.copy(sunPosition);
-  // uniforms.sunDirection.value.normalize();
-  // EarthMesh.rotation.x -= 0.000
-  // EarthMesh.rotation.y += delta * 45 * Math.PI / 180;
-  
-  
-  EarthMesh.rotation.x -= 0.000
-  EarthMesh.rotation.y += 0.001
-
-  // issParent.rotation.x -= 0.000
-  // issParent.rotation.y += 0.01
-
-  hoverPieces();
-  renderer.render(scene, camera)
-  requestAnimationFrame(animate)
-  
 async function getTLE() {
 	const res = await fetch(tleendpoint);
 	const tle = await res.json();
@@ -325,7 +271,11 @@ function render_line() {
 	scene.add(line);
 
 }
+// render_line()
 
+camera.aspect = window.innerWidth / window.innerHeight;
+camera.updateProjectionMatrix();
+renderer.setSize(window.innerWidth, window.innerHeight);
 var satrec,
 	gmst,
 	positionAndVelocity,
@@ -340,7 +290,7 @@ function animate() {
 	time = new THREE.Clock().getElapsedTime();
 	delta = new THREE.Clock().getDelta();
 	time *= Math.floor(Date.now() / 1000);
-	console.log();
+
 	uniforms.sunDirection.value.y = Math.sin(time);
 	uniforms.sunDirection.value.x = Math.cos(time);
 	// uniforms.sunDirection.value.copy(sunPosition);
@@ -363,6 +313,10 @@ function animate() {
 		iss_model.position.y = pos[1];
 		iss_model.position.z = pos[2];
 
+
+		cube.position.x = pos[0];
+		cube.position.y = pos[1];
+		cube.position.z = pos[2];
 		if (is_iss_selected === true) {
 			camera.lookAt(pos[0], pos[1], pos[2]);
 			controls.target.set(pos[0], pos[1], pos[2]);
@@ -370,15 +324,17 @@ function animate() {
 			camera.lookAt(0, 0, 0);
 			controls.target.set(0, 0, 0);
 		}
-		window.addEventListener("resize", onWindowResize, false);
-		function onWindowResize() {
-			camera.aspect = window.innerWidth / window.innerHeight;
-			camera.updateProjectionMatrix();
-			renderer.setSize(window.innerWidth, window.innerHeight);
-		}
+		// window.addEventListener("resize", onWindowResize, false);
 	}
+	hoverPieces();
 	renderer.render(scene, camera);
 	requestAnimationFrame(animate);
 }
 
+
+function onMouseMove(event) {
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+}
+window.addEventListener('mousemove', onMouseMove);
 animate();
