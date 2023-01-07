@@ -1,10 +1,6 @@
 // vite.config.js
 import vitePluginString from 'vite-plugin-string'
-
-
 import { defineConfig } from 'vite'
-
-
 
 export default defineConfig({
   server: {
@@ -13,7 +9,5 @@ export default defineConfig({
   preview: {
     port: process.env.port || 8080
   },
-  plugins: [
-    vitePluginString.default()
-  ]
+  plugins: [vitePluginString()]
 })

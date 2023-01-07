@@ -6,6 +6,14 @@
     font-family: 'IBM Plex Mono', monospace;
 }
 
+.iss-helper {
+    z-index: 99 !important;
+}
+
+.modal {
+    z-index: 99999999 !important;
+}
+
 .modal-content {
     background-color: #2a2b2c !important;
     color: white;
@@ -15,6 +23,11 @@
     height: 70vh;
     max-height: 70vh;
     overflow: auto;
+}
+
+.modal-body select {
+    border-radius: 2px !important;
+    margin-bottom: 15px;
 }
 
 .modal button.close-btn {
@@ -50,7 +63,6 @@
     justify-content: flex-start;
     align-items: flex-start;
     width: 100%;
-    height: 100%;
     max-width: 100%;
     overflow: auto;
 }
@@ -65,6 +77,17 @@
     box-shadow: 0 5px 10px #181818;
     border: 1px solid #575757;
     margin: 0 0 10px 0;
+}
+
+.conjunctions-wrapper .conjunction .image-wrapper {
+    display: flex;
+    flex-direction: row;
+}
+
+.conjunctions-wrapper .conjunction img {
+    width: 180px;
+    height: 140px;
+    margin-right: 10px;
 }
 
 .conjunctions-wrapper .conjunction div {
@@ -99,4 +122,12 @@ a:nth-child(2)) {
 
 .conjunctions-wrapper .conjunction span a:last-child {
     color: #f0f8ff;
+}
+
+
+/* -----------------------------------
+ */
+
+.modal-content iframe {
+    width: 465px !important;
 }
